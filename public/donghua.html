@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <title>滚动触发动画</title>
+
+        <!-- 引入 jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- 引入 Tailwind -->
+        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+        <style>
+            /* 🚀 初始隐藏元素（从左侧进入） */
+            .hidden-left {
+                transform: translateX(-100%);
+                opacity: 0;
+                transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+            }
+
+            /* 🚀 初始隐藏元素（从右侧进入） */
+            .hidden-right {
+                transform: translateX(100%);
+                opacity: 0;
+                transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+            }
+
+            /* 🎯 当元素进入视口时，滑入动画 */
+            .show {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100 text-center">
+        <!-- 头部 -->
+        <header class="bg-red-200 text-3xl p-6">
+            <span id="biaoti">我是笨蛋todo list</span>
+        </header>
+
+        <!-- ✅ 页面滚动到这里，触发动画 -->
+        <section class="h-screen flex items-center justify-center">
+            <h1 class="text-4xl">滚动下去看看</h1>
+        </section>
+
+        <!-- ✅ 左侧滑入动画 -->
+        <section class="h-screen flex items-center justify-center">
+            <div
+                class="hidden-left bg-blue-400 text-white p-6 w-80 text-lg rounded-lg"
+            >
+                我是从左边滑入的
+            </div>
+        </section>
+
+        <!-- ✅ 右侧滑入动画 -->
+        <section class="h-screen flex items-center justify-center">
+            <div
+                class="hidden-right bg-green-400 text-white p-6 w-80 text-lg rounded-lg"
+            >
+                我是从右边滑入的
+            </div>
+        </section>
+
+        <!-- ✅ 再次左侧滑入 -->
+        <section class="h-screen flex items-center justify-center">
+            <div
+                class="hidden-left bg-purple-400 text-white p-6 w-80 text-lg rounded-lg"
+            >
+                我是另一个从左边滑入的
+            </div>
+        </section>
+
+        <!-- ✅ jQuery 滚动触发动画 -->
+        <script>
+            $(document).ready(function () {
+                function checkVisibility() {
+                    $(".hidden-left, .hidden-right").each(function () {
+                        let elementTop = $(this).offset().top; // 获取元素距离页面顶部的距离
+                        let windowBottom =
+                            $(window).scrollTop() + $(window).height(); // 获取视口底部位置
+
+                        if (elementTop < windowBottom - 50) {
+                            // 进入视口
+                            $(this).addClass("show");
+                        }
+                    });
+                }
+
+                $(window).on("scroll", checkVisibility); // 监听滚动事件
+                checkVisibility(); // 初始检查，防止已有元素在视口内未显示
+            });
+        </script>
+    </body>
+</html>

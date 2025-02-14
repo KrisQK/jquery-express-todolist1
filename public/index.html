@@ -1,0 +1,179 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <title>Document</title>
+        <link
+            href="https://unpkg.com/aos@2.3.1/dist/aos.css"
+            rel="stylesheet"
+        />
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script src="anime.min.js"></script>
+
+        <!-- tailwind -->
+        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+        <!-- jquery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <header class="bg-red-200 text-center text-3xl">
+            <script>
+                anime({
+                    targets: ".jia",
+                    translateX: 250,
+                    easing: "easeInOutExpo",
+                });
+            </script>
+            <span id="biaoti">我是笨蛋todo list</span>
+            <script>
+                AOS.init();
+            </script>
+            <script>
+                $(document).ready(function () {
+                    var $biaoti = $("#biaoti");
+                    gsap.from("#biaoti", {
+                        opacity: 0,
+                        y: -50,
+                        duration: 1,
+                        ease: "power2.out",
+                    });
+                    $biaoti.hover(
+                        function () {
+                            $.get("data.txt", function (data) {
+                                $biaoti.text(data);
+                            });
+                        },
+                        function () {
+                            $biaoti.html("<h1>wudi</h1>");
+                        }
+                    );
+                });
+            </script>
+        </header>
+        <main class="bg-green-200 text-center">
+            <form>
+                <input
+                    id="shuru"
+                    type="text"
+                    class="rounded-md border-2"
+                />
+                <button
+                    id="jia"
+                    type="button"
+                    class="rounded-md border-2"
+                >
+                    添加
+                </button>
+                <button
+                    id="quanbu"
+                    type="button"
+                    class="rounded-md border-2"
+                >
+                    全部
+                </button>
+            </form>
+            <script>
+                let $jia = $("#jia");
+                let $quanbu = $("#quanbu");
+                const $shuru = $("#shuru");
+
+                $(document).ready(function () {
+                    $jia.on("click", function () {
+                        <!-- 发到后端 -->
+                        const shujv = $shuru.val().trim();
+
+                        $.ajax({
+                            url: url + "/tianjia",
+                            type: "POST",
+                            contentType: "application/json", // ✅ 确保请求头正确
+                            data: JSON.stringify({ shujv: $shuru.val() }), // ✅ 确保请求体是 JSON 格式
+                            success: function (fanhui) {
+                                if (fanhui.success) {
+                                    var a1 = `<li class="jia">${fanhui.id} -${shujv} 增加数据 - 狗娃</li>`;
+                                    $("#lists").append(a1);
+                                    $("#biaoti").text(fanhui.data);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("失败", status, error);
+                            },
+                        });
+                        $shuru.val("");
+                    });
+                    $quanbu.on("click", function () {
+                        $.get(url + "/tasks", function (datas) {
+                            $("#lists").html("");
+                            datas.forEach(function (item) {
+                                let li = `<li class="jia" data-id="${item.id}" data-aos="fade-right">${item.id}-${item.task}<button class="shanchu border-2">删除</button></li>`;
+                                $("#lists").append(li);
+                            });
+                        });
+                    });
+                    $("#lists").on("click", ".shanchu", function () {
+                        let $li = $(this).closest("li");
+                        let id = $li.attr("data-id");
+
+                        $.ajax({
+                            url: url + "/tasks/" + id,
+                            type: "DELETE",
+                            success: function (response) {
+                                if (response.success) {
+                                    $li.remove(); // ✅ 删除任务
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("删除失败", status, error);
+                            },
+                        });
+                    });
+                });
+            </script>
+            <ul
+                id="lists"
+                class="tasks text-md flex flex-col gap-2 bg-orange-200"
+            >
+                <li><span>ss</span><button class="border-2">删除</button></li>
+                <li><span>ss</span><button class="border-2">删除</button></li>
+            </ul>
+        </main>
+        <footer
+            id="jiao"
+            class="bg-red-200 text-center text-3xl"
+        >
+            <span id="wenzi">ss</span
+            ><button
+                id="kaixin"
+                class="border-2"
+            >
+                开心一下
+            </button>
+            <script>
+                const url = "http://127.0.0.1:3003";
+                var jiao = $("#jiao");
+                var wenzi = $("#wenzi");
+                var kaixin = $("#kaixin");
+
+                jiao.on("click", function (event) {
+                    wenzi.toggle(1000, function () {});
+                });
+                $("#kaixin").on("click", function () {
+                    gsap.to("#wenzi", {
+                        scale: 1.5,
+                        rotation: 360,
+                        duration: 1,
+                    });
+                });
+                kaixin.on("click", function (event) {
+                    event.stopPropagation();
+                    $.get(url, function (data, status) {
+                        wenzi.html(data);
+                    });
+                });
+            </script>
+        </footer>
+    </body>
+</html>
